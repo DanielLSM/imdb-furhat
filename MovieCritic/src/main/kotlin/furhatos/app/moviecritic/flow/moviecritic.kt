@@ -26,22 +26,16 @@ var movie_in: String = "movie"
 
 val Start = state(Interaction) {
     onEntry {
-        // inSocket.subscribe("")
-        // outSocket.publish("")
+
         random(
             {   furhat.say("Hello! Can you name a movie?") },
             {   furhat.say("What is your favourite movie?") }
         )
-        outSocket.send("hello")
+        outSocket.send("movie")
         movie_in = inSocket.recvStr()
         goto(QuestionAboutMovie)
 
     }
-    // onResponse {
-    //     furhat.say("I see, you would like to talk about " + movie_in) 
-    //     goto(QuestionAboutMovie)
-    // }
-
 }
 
 val QuestionAboutMovie = state(Interaction) {
@@ -50,17 +44,12 @@ val QuestionAboutMovie = state(Interaction) {
             { furhat.say("What do you think about " + movie_in + " ?") },
             { furhat.say("Give me your review about the movie "+ movie_in) }
         )
-
         outSocket.send("repeat review")
         message_in = inSocket.recvStr()
         furhat.say(message_in) //just repeat
         goto(ReviewSentiment)
-
     }
-
-
 }
-
 
 val ReviewSentiment = state(Interaction) {
     onEntry {
@@ -72,11 +61,8 @@ val ReviewSentiment = state(Interaction) {
             { furhat.say("I see, you consider the " +movie_in+ " movie to be " + message_in) },
             { furhat.say("So you think "+ movie_in+ " as a " + message_in)}
         )
-
         goto(MyOpinion)
     }
-    
-
 }
 
 val MyOpinion = state(Interaction) {
@@ -86,20 +72,17 @@ val MyOpinion = state(Interaction) {
             { furhat.ask("Would you like to know my opinion?") },
             { furhat.ask("Can I give my opinion?")}
         )
-
     }
     onResponse<No> {
         furhat.say("Okay, that's a shame. Have a splendid day!")
         goto(Idle)
     }
-    
     onResponse {
         outSocket.send("opinion")
         message_in = inSocket.recvStr()
         furhat.say(message_in) //just repeat
         goto(FinishOrStart)
     }
-
 
 }
 
@@ -109,8 +92,8 @@ val FinishOrStart = state(Interaction) {
             { furhat.ask("Would you like to talk about another movie or not?") },
             { furhat.ask("Do you wish to continue taking?")}
         )
-
     }
+
     onResponse<No> {
         furhat.say("Okay, that's a shame. Have a splendid day!")
         goto(Idle)
@@ -119,6 +102,5 @@ val FinishOrStart = state(Interaction) {
     onResponse {
         goto(ReStart)
     }
-
 }
 

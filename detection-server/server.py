@@ -8,6 +8,10 @@ from urllib.request import urlopen
 
 from recognizer import LANGUAGES_DICT, TRANSLATOR_DICT, AVAILABLE_LANGUAGES
 
+from sentiment_analysis import SentimentAnalysis
+
+from reviewer import Reviwer
+
 
 class ServerProcessor:
     def __init__(self, file_path='launch.json'):
@@ -16,7 +20,20 @@ class ServerProcessor:
         #Load YOLO
         self.r, self.asocket, self.insocket, self.outsocket = self._load_network_properties(
         )
+
+        self.behaviours = {
+            "movie": self.process_movie,
+            "repeat review": self.process_repeat_review,
+            "sentiment": self.process_sentiment,
+            "opinion": self.process_opinion
+        }
+
+        self.senti_analysist = SentimentAnalysis()
+        self.reviewer = Reviwer()
+
         self.language = {'language': 'english'}
+        self.movie = None
+        self.sentiment = None
 
     def _load_network_properties(self):
         audio_socket = 'http://' + self.config["Audio_IP"] + ':8080/audio.wav'
@@ -42,24 +59,84 @@ class ServerProcessor:
         print(config)
         return config
 
+    def process_movie(self):
+        recognized_word = self.get_mic_input()
+        self.movie = recognized_word
+        print("SERVER: movie is {}".format(self.movie))
+        self.outsocket.send_string(self.movie)
+
+    def process_repeat_review(self):
+        recognized_str = self.get_mic_input()
+        self.sentiment = recognized_str
+        print("SERVER: user feedback is {}".format(self.sentiment))
+        self.outsocket.send_string(self.sentiment)
+
+    def process_sentiment(self):
+        sentiment_score = self.senti_analysist.predict(self.sentiment)
+        print(sentiment_score[0][0])
+
+        if 0 < sentiment_score[0][0] <= 0.15:
+            preview_sentiment = 'bad'
+        elif 0.15 < sentiment_score[0][0] <= 0.40:
+            preview_sentiment = 'slightly bad'
+        elif 0.40 < sentiment_score[0][0] <= 0.60:
+            preview_sentiment = 'average'
+        elif 0.60 < sentiment_score[0][0] <= 0.80:
+            preview_sentiment = 'pretty good'
+        elif 0.80 < sentiment_score[0][0] <= 1:
+            preview_sentiment = 'almost perfect'
+
+        print("SERVER: sentiment analysis is {} on {}".format(
+            preview_sentiment, sentiment_score[0]))
+
+        self.outsocket.send_string(preview_sentiment)
+
+    def process_opinion(self):
+        movies_objs = self.reviewer.get_all_movies_objs(self.movie)
+        movie_id = self.reviewer.get_first_id(movies_objs)
+        reviews = self.reviewer.get_reviews_from_id(movie_id)
+        random_review = self.reviewer.get_first_review(reviews)
+
+        print("SERVER: sending a review!")
+
+        self.outsocket.send_string(random_review)
+
+    def get_mic_input(self):
+        recognized_str = 'None'
+        while recognized_str == 'None':
+            # print(message_furat)
+            audio = self.get_audio()
+            recognized_str = str(self.recognize(audio))
+            if recognized_str != 'None':
+                print(recognized_str)
+        return recognized_str
+
     def broadcast(self):
         while True:
             message_furat = self.insocket.recv_string()
             print("Furhat says: {}".format(message_furat))
-            # if message_furat == "hello":
-            #     print(message_furat)
-            recognized_str = 'None'
-            while recognized_str == 'None':
-                # print(message_furat)
-                audio = self.get_audio()
-                recognized_str = str(self.recognize(audio))
-                if recognized_str != 'None':
-                    print(recognized_str)
-                    self.outsocket.send_string(recognized_str)
-                # if recognized_str != None and recognized_str[0:2].lower(
-                # ) in AVAILABLE_LANGUAGES:
-                #     self.language['language'] = LANGUAGES_DICT[
-                #         recognized_str[0:2].lower()]
+            self.behaviours[message_furat]()
+            # recognized_str = self.get_mic_input()
+            # self.outsocket.send_string(recognized_str)
+
+    # def broadcast(self):
+    #     while True:
+    #         message_furat = self.insocket.recv_string()
+    #         print("Furhat says: {}".format(message_furat))
+    #         # if message_furat == "hello":
+    #         #     print(message_furat)
+    #         recognized_str = 'None'
+    #         while recognized_str == 'None':
+    #             # print(message_furat)
+    #             audio = self.get_audio()
+    #             recognized_str = str(self.recognize(audio))
+    #             if recognized_str != 'None':
+    #                 print(recognized_str)
+    #                 self.outsocket.send_string(recognized_str)
+    #             # if recognized_str != None and recognized_str[0:2].lower(
+    #             # ) in AVAILABLE_LANGUAGES:
+    #             #     self.language['language'] = LANGUAGES_DICT[
+    #             #         recognized_str[0:2].lower()]
 
     def get_audio(self):
         with sr.WavFile(urlopen(self.asocket)) as source:
