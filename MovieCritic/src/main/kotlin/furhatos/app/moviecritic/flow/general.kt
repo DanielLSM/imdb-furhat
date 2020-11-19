@@ -62,15 +62,6 @@ val Interaction : State = state {
 }
 
 val ReStart : State = state {
-    /*
-        Generic state to inherit for states where we are
-        attending a user.
-
-        If an attended user leaves, the system either
-        attends another user if existing or goes back to Idle.
-
-        If a user enters, we glance at the user.
-     */
 
     onEntry{
         goto(Start)

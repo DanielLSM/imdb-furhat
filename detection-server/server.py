@@ -84,6 +84,10 @@ class ServerProcessor:
         elif 0.80 < sentiment_score[0][0] <= 1:
             preview_sentiment = 'almost perfect'
 
+        rating = round(sentiment_score[0][0] * 10)
+        preview_sentiment = preview_sentiment + " with a rating of {} out of 10".format(
+            rating)
+
         print("SERVER: sentiment analysis is {} on {}".format(
             preview_sentiment, sentiment_score[0]))
 
