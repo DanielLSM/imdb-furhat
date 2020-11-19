@@ -106,7 +106,6 @@ class ServerProcessor:
     def get_mic_input(self):
         recognized_str = 'None'
         while recognized_str == 'None':
-            # print(message_furat)
             audio = self.get_audio()
             recognized_str = str(self.recognize(audio))
             if recognized_str != 'None':
