@@ -13,8 +13,8 @@ import zmq.ZMQ.ZMQ_SUB
 import zmq.ZMQ.ZMQ_PUB
 
 val logger = CommonUtils.getRootLogger()
-val inserv = "tcp://127.0.0.1:9998" //The TCP socket of the object server
-val outserv = "tcp://127.0.0.1:9999" //The TCP socket of the object server
+val inserv = "tcp://127.0.0.1:9998" //The TCP socket of the movie critic server
+val outserv = "tcp://127.0.0.1:9999" //The TCP socket of the movie critic server
 
 
 val inSocket: ZMQ.Socket = getConnectedSocketSUB(ZMQ_SUB, inserv) //Makes a socket of the object server

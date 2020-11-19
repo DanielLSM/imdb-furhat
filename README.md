@@ -52,18 +52,33 @@ conda env create -f furhat.yml
 ```
 conda activate furhat
 ```
-5) Alter the launch.json
+5) Alter the launch.json and change `Furhat_IP`, `DEV_IP`, `Audio_IP`
 ```
-"Furhat_IP": "<local ip of the robot>",
-"Dev_IP": "<local ip of your computer>", //You might be able to use ifconfig -a or ipconfig /all
+"Furhat_IP": "<ip of the robot>",
+"Dev_IP": "<ip of your computer>", 
+"Audio_IP": "<ip of your microphone>",
 ```
-6) Build the Movie Critic skill.
+
+`Furhat_IP` and `DEV_IP` can be the local IP of your computer if you are using Furhat's SDK, e.g., `127.0.0.1`.
+
+A suggestion for a mic, could be your own phone! You can install [IP Webcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=en&gl=US) from the [Google Play](https://play.google.com/)
+Then identifiy the IP of the webcam and replace it on the `Audio_IP` value.
+
+ 6) In the MovieCritic skill, on flow, file ```moviecritic.kt``` change the inserv and out serv ip in the same manner you changed the `launch.json` to the local ip of your computer (127.0.0.1), should look like bellow.
+
+```
+val inserv = "tcp://127.0.0.1:9998" //The TCP socket of the movie critic server
+val outserv = "tcp://127.0.0.1:9999" //The TCP socket of the movie critic server
+``` 
+
+
+7) Build the Movie Critic skill.
 ```
 cd imdb-furhat/MovieCritic
 sudo ./gradlew shadowJar
 ```
 
-6) Obtain parameters for the NLP network
+8) Obtain parameters for the NLP network
 - Download the [model paramters](https://kth.box.com/s/px6h4m0g122czotztumx93u8rqe5h0od) folder and uncompress it. Then, put the file ```weights.08.hdf5``` inside this repository (just next to this README.md). You have more 2 more parameter files to try for curiosity.
 
 
