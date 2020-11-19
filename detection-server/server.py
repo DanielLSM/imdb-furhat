@@ -6,8 +6,6 @@ import numpy as np
 import speech_recognition as sr
 from urllib.request import urlopen
 
-from recognizer import LANGUAGES_DICT, TRANSLATOR_DICT, AVAILABLE_LANGUAGES
-
 from sentiment_analysis import SentimentAnalysis
 
 from reviewer import Reviwer
@@ -116,27 +114,6 @@ class ServerProcessor:
             message_furat = self.insocket.recv_string()
             print("Furhat says: {}".format(message_furat))
             self.behaviours[message_furat]()
-            # recognized_str = self.get_mic_input()
-            # self.outsocket.send_string(recognized_str)
-
-    # def broadcast(self):
-    #     while True:
-    #         message_furat = self.insocket.recv_string()
-    #         print("Furhat says: {}".format(message_furat))
-    #         # if message_furat == "hello":
-    #         #     print(message_furat)
-    #         recognized_str = 'None'
-    #         while recognized_str == 'None':
-    #             # print(message_furat)
-    #             audio = self.get_audio()
-    #             recognized_str = str(self.recognize(audio))
-    #             if recognized_str != 'None':
-    #                 print(recognized_str)
-    #                 self.outsocket.send_string(recognized_str)
-    #             # if recognized_str != None and recognized_str[0:2].lower(
-    #             # ) in AVAILABLE_LANGUAGES:
-    #             #     self.language['language'] = LANGUAGES_DICT[
-    #             #         recognized_str[0:2].lower()]
 
     def get_audio(self):
         with sr.WavFile(urlopen(self.asocket)) as source:
