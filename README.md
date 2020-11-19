@@ -52,7 +52,7 @@ conda env create -f furhat.yml
 ```
 conda activate furhat
 ```
-5) Alter the launch.json and change `Furhat_IP`, `DEV_IP`, `Audio_IP`
+5) Alter the `launch.json` and change `Furhat_IP`, `DEV_IP`, `Audio_IP`
 ```
 "Furhat_IP": "<ip of the robot>",
 "Dev_IP": "<ip of your computer>", 

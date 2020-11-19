@@ -53,10 +53,10 @@ val ReviewSentiment = state(Interaction) {
     onEntry {
         outSocket.send("sentiment")
         message_in = inSocket.recvStr()
-        furhat.say(message_in) //just sentiment
+        // furhat.say(message_in) //just sentiment
 
         random(
-            { furhat.say("I see, you consider the " +movie_in+ " movie to be " + message_in) },
+            { furhat.say("After analysing againsts thousands of IMDB elitists, I think you consider the " +movie_in+ " movie to be " + message_in) },
             { furhat.say("So you think "+ movie_in+ " as a " + message_in)}
         )
         goto(MyOpinion)
