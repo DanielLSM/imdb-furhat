@@ -34,7 +34,7 @@ class ServerProcessor:
         self.sentiment = None
 
     def _load_network_properties(self):
-        audio_socket = 'http://' + self.config["Audio_IP"] + ':8080/audio.wav'
+        audio_socket = 'http://' + self.config["Audio_IP"] + ':' + self.config["audio_port"] + '/audio.wav'
         recognizer = sr.Recognizer()
 
         # Output results using a PUB socket

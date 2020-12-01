@@ -52,17 +52,20 @@ conda env create -f furhat.yml
 ```
 conda activate furhat
 ```
-5) Alter the `launch.json` and change `Furhat_IP`, `DEV_IP`, `Audio_IP`
+5) Alter the `launch.json` and change `Furhat_IP`, `DEV_IP`, `Audio_IP` and `audio_port`
 ```
 "Furhat_IP": "<ip of the robot>",
 "Dev_IP": "<ip of your computer>", 
 "Audio_IP": "<ip of your microphone>",
+"audio_port": "<port of your microphone>",
 ```
 
 `Furhat_IP` and `DEV_IP` can be the local IP of your computer if you are using Furhat's SDK, e.g., `127.0.0.1`.
 
 A suggestion for a mic, could be your own phone! You can install [IP Webcam](https://play.google.com/store/apps/details?id=com.pas.webcam&hl=en&gl=US) from the [Google Play](https://play.google.com/)
 Then identifiy the IP of the webcam and replace it on the `Audio_IP` value.
+
+Alternatively, use the provided microphone server on your computer: ```python mic-server/mic-server.py```.
 
  6) In the MovieCritic skill, on flow, file ```moviecritic.kt``` change the inserv and out serv ip in the same manner you changed the `launch.json` to the local ip of your computer (127.0.0.1), should look like bellow.
 
