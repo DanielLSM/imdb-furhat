@@ -32,7 +32,7 @@ def genHeader(sampleRate, bitsPerSample, channels):
 @app.route('/audio.wav')
 def audio():
     # start Recording
-    def stream():
+    def sound():
 
         CHUNK = 1024
         sampleRate = 44100
@@ -50,7 +50,7 @@ def audio():
                data = stream.read(CHUNK)
            yield(data)
 
-    return Response(stream(),
+    return Response(sound(),
                     mimetype="audio/x-wav")
 
 
@@ -60,9 +60,7 @@ if __name__ == "__main__":
     stream = audio.open(format=FORMAT, channels=CHANNELS,
                     rate=RATE, input=True,
                     frames_per_buffer=CHUNK)
-
     app.run(host='0.0.0.0', debug=False, threaded=True,port=8787)
-
     stream.stop_stream()
     stream.close()
     audio.terminate()
