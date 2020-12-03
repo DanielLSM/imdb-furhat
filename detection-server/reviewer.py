@@ -37,7 +37,11 @@ class Reviwer:
     def get_reviews_from_id(self, movie_id):
         assert isinstance(movie_id, str)
         reviews = self.ib.get_movie_reviews(movie_id)
-        review_data = reviews['data']['reviews']
+        review_data = []
+        try:
+            review_data = reviews['data']['reviews']
+        except:
+            pass
         return review_data
 
     def get_first_review(self, review_data):

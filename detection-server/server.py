@@ -5,6 +5,7 @@ import json
 import numpy as np
 import speech_recognition as sr
 from urllib.request import urlopen
+import random
 
 from sentiment_analysis import SentimentAnalysis
 
@@ -97,7 +98,12 @@ class ServerProcessor:
         movies_objs = self.reviewer.get_all_movies_objs(self.movie)
         movie_id = self.reviewer.get_first_id(movies_objs)
         reviews = self.reviewer.get_reviews_from_id(movie_id)
-        random_review = self.reviewer.get_first_review(reviews)
+        if len(reviews)>0:
+            random_review = self.reviewer.get_first_review(reviews)
+        else:
+            random_review = random.choice([
+                "I am sorry, I haven't seen this movie",
+                f"Sorry, I didn't see {self.movie}"]) 
 
         print("SERVER: sending a review!")
 
