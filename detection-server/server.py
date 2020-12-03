@@ -31,7 +31,8 @@ class ServerProcessor:
         self.reviewer = Reviwer()
 
         self.language = {'language': 'english'}
-        self.movie = None
+        self.movie = ""
+        self.movie_id = ""
         self.sentiment = None
 
     def _load_network_properties(self):
@@ -60,7 +61,12 @@ class ServerProcessor:
 
     def process_movie(self):
         recognized_word = self.get_mic_input()
-        self.movie = recognized_word
+        print("SERVER: recognized_word is {}".format(recognized_word))
+        movies_objs = self.reviewer.get_all_movies_objs(recognized_word)
+        if (movies_objs is not None) and (len(movies_objs) > 0):
+            self.movie_id = movies_objs[0].getID()
+            self.movie = movies_objs[0].get('title')
+
         print("SERVER: movie is {}".format(self.movie))
         self.outsocket.send_string(self.movie)
 
@@ -95,9 +101,7 @@ class ServerProcessor:
         self.outsocket.send_string(preview_sentiment)
 
     def process_opinion(self):
-        movies_objs = self.reviewer.get_all_movies_objs(self.movie)
-        movie_id = self.reviewer.get_first_id(movies_objs)
-        reviews = self.reviewer.get_reviews_from_id(movie_id)
+        reviews = self.reviewer.get_reviews_from_id(self.movie_id)
         if len(reviews)>0:
             random_review = self.reviewer.get_first_review(reviews)
         else:
