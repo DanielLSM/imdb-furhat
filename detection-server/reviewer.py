@@ -1,4 +1,5 @@
 from imdb import IMDb
+import random
 
 # create an instance of the IMDb class
 ia = IMDb()
@@ -8,6 +9,22 @@ class Reviwer:
     def __init__(self):
         self.ib = IMDb()
         self.limit_review = 300
+        self.top250 = None
+        self._update_top250()
+
+    def _update_top250(self):
+        if self.top250 is None:
+            self.top250 = self.ib.get_top250_movies()
+
+    def pick_movie_with_taglines(self, min_taglines):
+        movie_with_taglines = None
+        while movie_with_taglines == None:
+            movie = random.choice(self.top250)
+            self.ib.update(movie, info=['main', 'taglines'])
+            taglines = movie.get('taglines')
+            if (taglines is not None) and (len(taglines) >= min_taglines):
+                movie_with_taglines = movie
+        return movie_with_taglines
 
     def get_all_movies_objs(self, movie_name):
         assert isinstance(movie_name, str)
@@ -36,3 +53,6 @@ if __name__ == "__main__":
     movie_id = rev.get_first_id(movies_objs)
     reviews = rev.get_reviews_from_id(movie_id)
     random_review = rev.get_first_review(reviews)
+
+    random_movie = rev.pick_movie_with_taglines(3)
+    print(f"{random_movie.get('title')}, {random_movie.get('year')}:\n{random_movie.get('taglines')}")
