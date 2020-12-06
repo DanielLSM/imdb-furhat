@@ -4,6 +4,9 @@ import furhatos.app.moviecritic.movies
 import furhatos.nlu.EnumEntity
 import furhatos.nlu.Intent
 import furhatos.util.Language
+import furhatos.nlu.EnumItem
+import furhatos.nlu.TextBuilder
+import com.google.gson.Gson
 
 class PlayGame : Intent() {
     override fun getExamples(lang: Language): List<String> {
@@ -63,5 +66,60 @@ class Guess(var title: MovieTitle? = null) : Intent() {
             "The movie is @title",
             "The movie is called @title"
         )
+    }
+}
+
+data class MovieData (
+        var id: String,
+        var name: String
+)
+class MovieList: ArrayList<MovieData>()
+
+object MovieChoiceHolder {
+
+    var movie_list: MovieChoice? = null
+
+    init {
+    }
+
+    fun setValues(response:String) {
+        movie_list = MovieChoice(Gson().fromJson(response, MovieList::class.java))
+        MovieOption().forget()
+    }
+}
+
+class MovieChoice(val alternatives: MovieList) {
+    var options : MutableList<EnumItem> = mutableListOf()
+
+    init {
+        alternatives.forEach {
+            options.add(EnumItem(MovieOption(it.id, it.name), it.name))
+        }
+    }
+
+    fun getOptionsString() : String {
+        var text = TextBuilder()
+        text.appendList(options.map { it.wordString }, "or")
+        return text.toString()
+    }
+
+    val speechPhrases : List<String>
+        get() = options.map { it.wordString ?: "" }
+}
+
+class MovieOption : EnumEntity {
+
+    var id : String = "xxx"
+
+    constructor() {
+    }
+
+    constructor(id : String, name : String) {
+        this.id = id
+        this.value = name
+    }
+
+    override fun getEnumItems(lang: Language): List<EnumItem> {
+        return MovieChoiceHolder.movie_list!!.options;
     }
 }

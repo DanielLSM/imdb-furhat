@@ -24,6 +24,7 @@ class ServerProcessor:
             "movie": self.process_movie,
             "repeat review": self.process_repeat_review,
             "sentiment": self.process_sentiment,
+            "choose": self.process_choice,
             "opinion": self.process_opinion
         }
 
@@ -99,6 +100,16 @@ class ServerProcessor:
             preview_sentiment, sentiment_score[0]))
 
         self.outsocket.send_string(preview_sentiment)
+
+    def process_choice(self):
+        try:
+            movies_list = self.reviewer.get_all_movies_objs(self.movie)
+        except:
+            movies_list = []
+        json_data = json.dumps(movies_list)
+        print("SERVER: sending movies list!")
+
+        self.outsocket.send_string(json_data)
 
     def process_opinion(self):
         reviews = self.reviewer.get_reviews_from_id(self.movie_id)
