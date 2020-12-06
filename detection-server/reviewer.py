@@ -12,7 +12,8 @@ class Reviwer:
     def get_all_movies_objs(self, movie_name):
         assert isinstance(movie_name, str)
         movies_objs = self.ib.search_movie(movie_name.lower())
-        return movies_objs
+        movies_list = [{'id':movie.getID(), 'name': movie.get('title')} for movie in movies_objs[:3]]
+        return movies_list
 
     def get_first_id(self, movies_objs):
         return movies_objs[0].getID()

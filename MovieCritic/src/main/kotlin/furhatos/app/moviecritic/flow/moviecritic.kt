@@ -1,6 +1,9 @@
 package furhatos.app.moviecritic.flow
 // package furhatos.app.moviecritic
 
+import furhatos.app.moviecritic.nlu.DontKnow
+import furhatos.app.moviecritic.nlu.MovieOption
+import furhatos.app.moviecritic.nlu.MovieChoiceHolder
 import furhatos.app.moviecritic.getConnectedSocketSUB
 import furhatos.app.moviecritic.getConnectedSocketPUB
 import furhatos.flow.kotlin.*
@@ -31,9 +34,44 @@ val Start = state(Interaction) {
         )
         outSocket.send("movie")
         movie_in = inSocket.recvStr()
-        goto(QuestionAboutMovie)
-
+        goto(ChooseMovie)
     }
+
+    // The users answers that they don't know
+    //onResponse<DontKnow> {
+    //    furhat.say("Me neither") //just repeat
+    //    reentry()
+    //}
+    //onResponse<Yes> {
+    //    furhat.say("great!")
+    //    reentry()
+    //}
+    //
+    //onResponse<No> {
+    //    furhat.say("oh well")
+    //    reentry()
+    //}
+}
+
+val ChooseMovie = state(Interaction) {
+    onEntry {
+        furhat.say("Hmmm... " + movie_in + "...")
+        //MovieChoice.forget()
+        outSocket.send("choose")
+        message_in = inSocket.recvStr()
+        MovieChoiceHolder.setValues(message_in)
+        furhat.ask("Do you mean " + MovieChoiceHolder.movie_list!!.getOptionsString()) //just repeat
+        //goto(ReviewSentiment)
+    }
+
+    // The users answers that they don't know
+    onResponse<MovieOption> {
+        val answer = it.intent
+        furhat.say("${answer.value} Me neither") //just repeat
+        
+    }
+
+
 }
 
 val QuestionAboutMovie = state(Interaction) {
