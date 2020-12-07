@@ -1,5 +1,6 @@
 package furhatos.app.moviecritic.flow
 
+import furhatos.app.moviecritic.gameState
 import furhatos.app.moviecritic.nlu.CritiqueMovie
 import furhatos.app.moviecritic.nlu.PlayGame
 import furhatos.flow.kotlin.furhat
@@ -17,6 +18,7 @@ val PreStart : State = state {
     }
 
     onResponse<PlayGame> {
+        gameState.reset()
         furhat.say("Great! Let the fun begin.")
         furhat.say("Here comes the first summary.")
         goto(AwaitingGuess)

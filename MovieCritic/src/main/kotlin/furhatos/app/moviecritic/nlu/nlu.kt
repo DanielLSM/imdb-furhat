@@ -157,15 +157,13 @@ class MovieOption : EnumEntity {
 // Intent with examples fetched from an API. Note that the entity needs to be nullable
 class ChooseFirst() : Intent() {
     override fun getExamples(lang: Language): List<String> {
-        return listOf("The first one", "The first",
-                "Number one")
+        return listOf("The first one", "The first", "Number one")
     }
 }
 
 class ChooseLast() : Intent() {
     override fun getExamples(lang: Language): List<String> {
-        return listOf("The last one",
-                "The last")
+        return listOf("The last one", "The last", "The latest", "The latest one")
     }
 }
 

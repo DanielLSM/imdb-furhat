@@ -2,7 +2,9 @@ package furhatos.app.moviecritic
 
 import furhatos.records.User
 
-class ReviewGameState(val rounds: Int) {
+object gameState {
+    var rounds: Int = 5
+    var count: Int = 0
     var currentMovie: Movie? = null
     var currentAnswer: Answer = Answer()
     var completedAnswers: MutableList<Answer> = ArrayList()
@@ -18,14 +20,25 @@ class ReviewGameState(val rounds: Int) {
         answer.correct = correct
         completedAnswers.add(answer)
         if (!isFinished()) {
+            println(currentMovie!!.title)
             currentAnswer = Answer()
-            currentMovie = null
+            count++
+            currentMovie = movies[count]
         }
         return answer
     }
 
     fun isFinished(): Boolean {
-        return completedAnswers.size >= rounds
+        return count >= rounds
+    }
+
+    fun reset() {
+        rounds = 5
+        count = 0
+        movies.shuffle()
+        currentMovie = movies[0]
+        currentAnswer = Answer()
+        completedAnswers = ArrayList()
     }
 }
 
@@ -58,5 +71,5 @@ class Answer {
     }
 }
 
-val User.gameState: ReviewGameState
-    get() = data.getOrPut(ReviewGameState::class.qualifiedName, ReviewGameState(rounds = 5))
+//val User.gameState: ReviewGameState
+//    get() = data.getOrPut(ReviewGameState::class.qualifiedName, ReviewGameState(rounds = 5))
