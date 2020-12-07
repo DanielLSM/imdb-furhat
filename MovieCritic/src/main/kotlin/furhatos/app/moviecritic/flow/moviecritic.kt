@@ -4,11 +4,14 @@ package furhatos.app.moviecritic.flow
 import furhatos.app.moviecritic.nlu.DontKnow
 import furhatos.app.moviecritic.nlu.MovieOption
 import furhatos.app.moviecritic.nlu.MovieData
+import furhatos.app.moviecritic.nlu.ChooseFirst
+import furhatos.app.moviecritic.nlu.ChooseLast
 import furhatos.app.moviecritic.nlu.MovieChoiceHolder
 import furhatos.app.moviecritic.getConnectedSocketSUB
 import furhatos.app.moviecritic.getConnectedSocketPUB
 import furhatos.flow.kotlin.*
 import furhatos.nlu.common.*
+import furhatos.nlu.common.Number
 import furhatos.util.Language
 import furhatos.util.CommonUtils
 
@@ -101,6 +104,38 @@ val ChooseMovie = state(Interaction) {
         )
 
         goto(QuestionAboutMovie)
+    }
+
+    onResponse<ChooseFirst> {
+        var movie = MovieChoiceHolder.raw_list!![0]
+        MovieChoiceHolder.setChoice(movie)
+        furhat.say("Allright! The first one is " + movie.name)
+
+        goto(QuestionAboutMovie)
+    }
+    onResponse<ChooseLast> {
+        var last = MovieChoiceHolder.raw_list!!.size - 1
+        var movie = MovieChoiceHolder.raw_list!![last]
+        MovieChoiceHolder.setChoice(movie)
+        furhat.say("Allright! The last one is " + movie.name)
+
+        goto(QuestionAboutMovie)
+    }
+
+    onResponse<Number> {
+        var answer = it.intent.value
+        if (answer != null) {
+            var size = MovieChoiceHolder.raw_list!!.size
+            if ((answer <= size) && (answer > 0)) {
+                var movie = MovieChoiceHolder.raw_list!![answer-1]    
+                MovieChoiceHolder.setChoice(movie)
+                furhat.say("Allright! Number " + answer + " is " + movie.name)
+
+                goto(QuestionAboutMovie)
+            } else {
+                reentry()
+            }
+        }
     }
 }
 
