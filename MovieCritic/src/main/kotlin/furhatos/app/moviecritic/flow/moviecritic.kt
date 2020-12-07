@@ -27,32 +27,18 @@ val outSocket: ZMQ.Socket = getConnectedSocketPUB(ZMQ_PUB, outserv) //Makes a so
 var message_in: String = "hello"
 var movie_in: String = "movie"
 
-val Start = state(Interaction) {
+val CritiqueStart = state(Interaction) {
     onEntry {
         MovieChoiceHolder.resetChoice()
         random(
-            {   furhat.say("Hello! Can you name a movie?") },
+            {   furhat.say("Can you name a movie?") },
+            {   furhat.say("Which movie do you want to discuss?") },
             {   furhat.say("What is your favourite movie?") }
         )
         outSocket.send("movie")
         movie_in = inSocket.recvStr()
         goto(ChooseMovie)
     }
-
-    // The users answers that they don't know
-    //onResponse<DontKnow> {
-    //    furhat.say("Me neither") //just repeat
-    //    reentry()
-    //}
-    //onResponse<Yes> {
-    //    furhat.say("great!")
-    //    reentry()
-    //}
-    //
-    //onResponse<No> {
-    //    furhat.say("oh well")
-    //    reentry()
-    //}
 }
 
 val ReStart : State = state {
@@ -60,7 +46,7 @@ val ReStart : State = state {
         MovieChoiceHolder.resetChoice()
         random(
             {   furhat.say("Which movie do youwant to talk about now?") },
-            {   furhat.say("Which movie do you want to discuss?") }
+            {   furhat.say("Which movie do you want to discuss now?") }
         )
         outSocket.send("movie")
         movie_in = inSocket.recvStr()
@@ -141,9 +127,10 @@ val QuestionAboutMovie = state(Interaction) {
     onEntry {
         if (MovieChoiceHolder.chosen_movie!!.seen) {
             random(
-                { furhat.say("What do you think about " + MovieChoiceHolder.chosen_movie!!.name + " ?") },
                 { furhat.say("The ${MovieChoiceHolder.chosen_movie!!.year} movie by  ${MovieChoiceHolder.chosen_movie!!.directors[0]}? What did you think about it?") },
-                { furhat.say("Hmmm... The one with ${MovieChoiceHolder.chosen_movie!!.cast[0]}? What was your opinion?") }
+                { furhat.say("${MovieChoiceHolder.chosen_movie!!.directors[0]}'s movie with ${MovieChoiceHolder.chosen_movie!!.cast[0]}? What did you think about it?") },
+                { furhat.say("Hmmm... The one with ${MovieChoiceHolder.chosen_movie!!.cast[0]}? What was your opinion?") },
+                { furhat.say("What do you think about " + MovieChoiceHolder.chosen_movie!!.name + " ?") }
             )
         } else {
             random(
@@ -163,7 +150,6 @@ val ReviewSentiment = state(Interaction) {
     onEntry {
         outSocket.send("sentiment")
         message_in = inSocket.recvStr()
-        // furhat.say(message_in) //just sentiment
 
         random(
             { furhat.say("After comparing againsts thousands of IMDB users, I think you consider the " + MovieChoiceHolder.chosen_movie!!.name + " movie to be " + message_in) },
@@ -172,7 +158,6 @@ val ReviewSentiment = state(Interaction) {
         if (MovieChoiceHolder.chosen_movie!!.seen) {
             goto(MyOpinion)
         } else {
-            
             random(
                 { furhat.say("I didn't see this movie, but I heard that the book was better...") },
                 { furhat.say("I might have seen it, but it didn't leave any impression...")},
@@ -214,8 +199,8 @@ val FinishOrStart = state(Interaction) {
     }
 
     onResponse<No> {
-        furhat.say("Okay, that's a shame. Have a splendid day!")
-        goto(Idle)
+        furhat.say("Okay, that's a shame.")
+        goto(PreStart)
     }
 
     onResponse {

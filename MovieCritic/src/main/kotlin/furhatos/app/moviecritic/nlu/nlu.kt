@@ -13,8 +13,11 @@ class PlayGame : Intent() {
         return listOf(
             "Let's play a game",
             "I want to play review quiz",
+            "I want to play a game",
             "I would like to play a game",
-            "Start a new game"
+            "Start a new game",
+            "Play a game",
+            "Play"
         )
     }
 }
@@ -22,6 +25,14 @@ class PlayGame : Intent() {
 class CritiqueMovie : Intent() {
     override fun getExamples(lang: Language): List<String> {
         return listOf(
+            "Talk about a movie",
+            "Discuss a movie",
+            "I want to discuss a movie",
+            "I want to talk about a movie",
+            "I would like to discuss a movie",
+            "I would like to talk about a movie",
+            "Let's talk about a movie",
+            "Let's discuss a movie",
             "I want to critique a movie",
             "Let's critique a movie",
             "I would like to hear your opinion on a movie"

@@ -3,18 +3,16 @@ package furhatos.app.moviecritic.flow
 import furhatos.app.moviecritic.nlu.CritiqueMovie
 import furhatos.app.moviecritic.nlu.PlayGame
 import furhatos.flow.kotlin.furhat
+import furhatos.flow.kotlin.*
 import furhatos.flow.kotlin.onResponse
 import furhatos.flow.kotlin.state
 
-val PreStart = state(Interaction) {
+val PreStart : State = state {
     onEntry {
         random(
-            { furhat.say("Hi there") },
-            { furhat.say("Oh, hello there") }
-        )
-        random(
-            { furhat.ask("How can I help you?") },
-            { furhat.ask("What would you like to do?") }
+            { furhat.ask("Hi! Do you want to play a game or discuss a movie?") },
+            { furhat.ask("What would you like to do? Discuss a movie, or play a game?") },
+            { furhat.ask("Hello! Do you want to play a game, or to talk about a movie?") }
         )
     }
 
@@ -25,6 +23,6 @@ val PreStart = state(Interaction) {
     }
 
     onResponse<CritiqueMovie> {
-        goto(Start)
+        goto(CritiqueStart)
     }
 }
