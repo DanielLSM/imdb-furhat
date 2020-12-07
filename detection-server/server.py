@@ -21,7 +21,7 @@ class ServerProcessor:
 
         self.behaviours = {
             "movie": self.process_movie,
-            "repeat review": self.process_repeat_review,
+            "repeat_review": self.process_repeat_review,
             "sentiment": self.process_sentiment,
             "choose": self.process_choice,
             "opinion": self.process_opinion
@@ -96,7 +96,7 @@ class ServerProcessor:
 
     def process_choice(self):
         try:
-            movies_list = self.reviewer.get_all_movies_objs(self.movie)
+            movies_list = self.reviewer.get_movies_list(self.movie)
         except:
             movies_list = []
         json_data = json.dumps(movies_list)
@@ -104,9 +104,7 @@ class ServerProcessor:
 
         self.outsocket.send_string(json_data)
 
-    def process_opinion(self):
-        movies_objs = self.reviewer.get_all_movies_objs(self.movie)
-        movie_id = self.reviewer.get_first_id(movies_objs)
+    def process_opinion(self, movie_id):
         reviews = self.reviewer.get_reviews_from_id(movie_id)
         random_review = self.reviewer.get_first_review(reviews)
 
@@ -127,7 +125,11 @@ class ServerProcessor:
         while True:
             message_furat = self.insocket.recv_string()
             print("Furhat says: {}".format(message_furat))
-            self.behaviours[message_furat]()
+            parts = message_furat.split('|')
+            if len(parts) == 1:
+                self.behaviours[message_furat]()
+            else:
+                self.behaviours[parts[0]](parts[1])
 
     def get_audio(self):
         with sr.WavFile(urlopen(self.asocket)) as source:

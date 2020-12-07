@@ -3,6 +3,7 @@ package furhatos.app.moviecritic.flow
 
 import furhatos.app.moviecritic.nlu.DontKnow
 import furhatos.app.moviecritic.nlu.MovieOption
+import furhatos.app.moviecritic.nlu.MovieData
 import furhatos.app.moviecritic.nlu.MovieChoiceHolder
 import furhatos.app.moviecritic.getConnectedSocketSUB
 import furhatos.app.moviecritic.getConnectedSocketPUB
@@ -24,6 +25,8 @@ val inSocket: ZMQ.Socket = getConnectedSocketSUB(ZMQ_SUB, inserv) //Makes a sock
 val outSocket: ZMQ.Socket = getConnectedSocketPUB(ZMQ_PUB, outserv) //Makes a socket of the object server
 var message_in: String = "hello"
 var movie_in: String = "movie"
+
+var chosen_movie = ""
 
 val Start = state(Interaction) {
     onEntry {
@@ -55,20 +58,27 @@ val Start = state(Interaction) {
 
 val ChooseMovie = state(Interaction) {
     onEntry {
-        furhat.say("Hmmm... " + movie_in + "...")
-        //MovieChoice.forget()
         outSocket.send("choose")
         message_in = inSocket.recvStr()
         MovieChoiceHolder.setValues(message_in)
-        furhat.ask("Do you mean " + MovieChoiceHolder.movie_list!!.getOptionsString()) //just repeat
-        //goto(ReviewSentiment)
+        var num_movies : Int = MovieChoiceHolder.movie_list!!.options.size
+        if (num_movies > 1) {
+            furhat.ask("I can think of ${num_movies} with that name." +
+            "Do you mean " + MovieChoiceHolder.movie_list!!.getOptionsString()+ "?") //just repeat
+        } else {
+            var movie : MovieData = MovieChoiceHolder.raw_list!![0]
+            chosen_movie = movie.id
+            
+            furhat.say("Hmmm... " + movie_in + "...")
+            goto(QuestionAboutMovie)
+        }
     }
 
-    // The users answers that they don't know
     onResponse<MovieOption> {
         val answer = it.intent
-        furhat.say("${answer.value} Me neither") //just repeat
-        
+        chosen_movie = answer.id 
+        furhat.say("Allright! ${answer.value}") //just repeat
+        goto(QuestionAboutMovie)
     }
 
 
@@ -80,7 +90,7 @@ val QuestionAboutMovie = state(Interaction) {
             { furhat.say("What do you think about " + movie_in + " ?") },
             { furhat.say("Give me your review about the movie "+ movie_in) }
         )
-        outSocket.send("repeat review")
+        outSocket.send("repeat_review")
         message_in = inSocket.recvStr()
         furhat.say(message_in) //just repeat
         goto(ReviewSentiment)
@@ -114,7 +124,7 @@ val MyOpinion = state(Interaction) {
         goto(Idle)
     }
     onResponse {
-        outSocket.send("opinion")
+        outSocket.send("opinion" + "|" + chosen_movie)
         message_in = inSocket.recvStr()
         furhat.say(message_in) //just repeat
         goto(FinishOrStart)
