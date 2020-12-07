@@ -12,10 +12,6 @@ import furhatos.flow.kotlin.users
 
 val AwaitingGuess = state(Interaction) {
     onEntry {
-        val gameState = users.current.gameState
-        if (gameState.currentMovie == null) {
-            gameState.currentMovie = movies.random()
-        }
         if (!gameState.currentAnswer.didFurhatAsk) {
             furhat.say(gameState.currentMovie!!.summary)
             gameState.currentAnswer.didFurhatAsk = true
@@ -29,20 +25,17 @@ val AwaitingGuess = state(Interaction) {
 //    }
 
     onResponse<AskForYear> {
-        val gameState = users.current.gameState
         gameState.currentAnswer.didAskForYear = true
         furhat.ask("The movie is from the year ${gameState.currentMovie!!.year}")
     }
 
     onResponse<AskForStoryline> {
-        val gameState = users.current.gameState
         gameState.currentAnswer.didAskForStoryline = true
         furhat.say("Storyline.")
         furhat.ask(gameState.currentMovie!!.storyline)
     }
 
     onResponse<Guess> {
-        val gameState = users.current.gameState
         val guessedTitle = it.intent.title ?: ""
         val answer = gameState.takeGuess("$guessedTitle")
         val correctStr = if (answer.correct!!) "correct" else "incorrect"
@@ -55,7 +48,7 @@ val AwaitingGuess = state(Interaction) {
             reentry()
         } else {
             furhat.say("This concludes the game. I hope you enjoyed it.")
-            goto(Idle)
+            goto(PreStart)
         }
     }
 }

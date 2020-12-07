@@ -1,6 +1,6 @@
 package furhatos.app.moviecritic
 
-val movies = listOf(
+val movies = mutableListOf(
     Movie(
         "Happiest Season",
         year = 2020,
