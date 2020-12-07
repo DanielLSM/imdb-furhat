@@ -1,7 +1,5 @@
 package furhatos.app.moviecritic.flow
-// package furhatos.app.moviecritic
 
-import furhatos.app.moviecritic.nlu.DontKnow
 import furhatos.app.moviecritic.nlu.MovieOption
 import furhatos.app.moviecritic.nlu.MovieData
 import furhatos.app.moviecritic.nlu.ChooseFirst
@@ -224,4 +222,3 @@ val FinishOrStart = state(Interaction) {
         goto(ReStart)
     }
 }
-

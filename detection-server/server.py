@@ -5,7 +5,6 @@ import json
 import numpy as np
 import speech_recognition as sr
 from urllib.request import urlopen
-import random
 
 from sentiment_analysis import SentimentAnalysis
 
@@ -32,8 +31,7 @@ class ServerProcessor:
         self.reviewer = Reviwer()
 
         self.language = {'language': 'english'}
-        self.movie = ""
-        self.movie_id = ""
+        self.movie = None
         self.sentiment = None
 
     def _load_network_properties(self):
@@ -62,12 +60,7 @@ class ServerProcessor:
 
     def process_movie(self):
         recognized_word = self.get_mic_input()
-        print("SERVER: recognized_word is {}".format(recognized_word))
-        movies_objs = self.reviewer.get_all_movies_objs(recognized_word)
-        if (movies_objs is not None) and (len(movies_objs) > 0):
-            self.movie_id = movies_objs[0].getID()
-            self.movie = movies_objs[0].get('title')
-
+        self.movie = recognized_word
         print("SERVER: movie is {}".format(self.movie))
         self.outsocket.send_string(self.movie)
 
