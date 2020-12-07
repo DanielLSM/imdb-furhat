@@ -41,6 +41,10 @@ def audio():
         wav_header = genHeader(sampleRate, bitsPerSample, channels)
 
         print("Streaming...")
+        if stream.is_active():
+            stream.stop_stream()
+        stream.start_stream()
+
         first_run = True
         while True:
            if first_run:
