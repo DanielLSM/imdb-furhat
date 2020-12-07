@@ -71,19 +71,25 @@ class Guess(var title: MovieTitle? = null) : Intent() {
 
 data class MovieData (
         var id: String,
-        var name: String
+        var name: String,
+        var year: String,
+        var rating: String,
+        var directors: List<String>,
+        var cast: List<String>
 )
 class MovieList: ArrayList<MovieData>()
 
 object MovieChoiceHolder {
 
     var movie_list: MovieChoice? = null
+    var raw_list: MovieList? = null
 
     init {
     }
 
     fun setValues(response:String) {
-        movie_list = MovieChoice(Gson().fromJson(response, MovieList::class.java))
+        raw_list = Gson().fromJson(response, MovieList::class.java)
+        movie_list = MovieChoice(raw_list!!)
         MovieOption().forget()
     }
 }
