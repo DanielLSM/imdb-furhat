@@ -61,12 +61,3 @@ val Interaction : State = state {
     }
 }
 
-val ReStart : State = state {
-
-    onEntry{
-        goto(Start)
-        // }
-    }
-   
-}
-

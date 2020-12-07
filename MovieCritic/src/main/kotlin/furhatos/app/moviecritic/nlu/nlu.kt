@@ -58,7 +58,8 @@ data class MovieData (
         var year: String,
         var rating: String,
         var directors: List<String>,
-        var cast: List<String>
+        var cast: List<String>,
+        var seen: Boolean
 )
 class MovieList: ArrayList<MovieData>()
 
@@ -66,6 +67,7 @@ object MovieChoiceHolder {
 
     var movie_list: MovieChoice? = null
     var raw_list: MovieList? = null
+    var chosen_movie: MovieData? = null
 
     init {
         /// ???
@@ -76,6 +78,14 @@ object MovieChoiceHolder {
         movie_list = MovieChoice(raw_list!!)
         MovieOption().forget()
     }
+
+    fun setChoice(movie:MovieData?) {
+        chosen_movie = movie
+    }
+
+    fun resetChoice() {
+        chosen_movie = null
+    }
 }
 
 class MovieChoice(val alternatives: MovieList) {
@@ -83,7 +93,7 @@ class MovieChoice(val alternatives: MovieList) {
 
     init {
         alternatives.forEach {
-            options.add(EnumItem(MovieOption(it.id, it.name), it.name))
+            options.add(EnumItem(MovieOption(it.id, it.name, it), it.name))
         }
     }
 
@@ -102,15 +112,17 @@ class MovieChoice(val alternatives: MovieList) {
 class MovieOption : EnumEntity {
 
     var id : String = "xxx"
+    var movie_data : MovieData? = null
 
     // Every entity and intent needs an empty constructor.
     constructor() {
     }
 
     // Since we are overwriting the value, we need to use this custom constructor
-    constructor(id : String, name : String) {
+    constructor(id : String, name : String, movie_data : MovieData) {
         this.id = id
         this.value = name
+        this.movie_data = movie_data
     }
 
     override fun getEnumItems(lang: Language): List<EnumItem> {
