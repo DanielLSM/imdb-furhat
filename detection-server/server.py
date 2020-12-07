@@ -5,7 +5,6 @@ import json
 import numpy as np
 import speech_recognition as sr
 from urllib.request import urlopen
-import random
 
 from sentiment_analysis import SentimentAnalysis
 
@@ -22,8 +21,9 @@ class ServerProcessor:
 
         self.behaviours = {
             "movie": self.process_movie,
-            "repeat review": self.process_repeat_review,
+            "repeat_review": self.process_repeat_review,
             "sentiment": self.process_sentiment,
+            "choose": self.process_choice,
             "opinion": self.process_opinion
         }
 
@@ -31,8 +31,7 @@ class ServerProcessor:
         self.reviewer = Reviwer()
 
         self.language = {'language': 'english'}
-        self.movie = ""
-        self.movie_id = ""
+        self.movie = None
         self.sentiment = None
 
     def _load_network_properties(self):
@@ -61,12 +60,7 @@ class ServerProcessor:
 
     def process_movie(self):
         recognized_word = self.get_mic_input()
-        print("SERVER: recognized_word is {}".format(recognized_word))
-        movies_objs = self.reviewer.get_all_movies_objs(recognized_word)
-        if (movies_objs is not None) and (len(movies_objs) > 0):
-            self.movie_id = movies_objs[0].getID()
-            self.movie = movies_objs[0].get('title')
-
+        self.movie = recognized_word
         print("SERVER: movie is {}".format(self.movie))
         self.outsocket.send_string(self.movie)
 
@@ -100,14 +94,19 @@ class ServerProcessor:
 
         self.outsocket.send_string(preview_sentiment)
 
-    def process_opinion(self):
-        reviews = self.reviewer.get_reviews_from_id(self.movie_id)
-        if len(reviews)>0:
-            random_review = self.reviewer.get_first_review(reviews)
-        else:
-            random_review = random.choice([
-                "I am sorry, I haven't seen this movie",
-                f"Sorry, I didn't see {self.movie}"]) 
+    def process_choice(self):
+        try:
+            movies_list = self.reviewer.get_movies_list(self.movie)
+        except:
+            movies_list = []
+        json_data = json.dumps(movies_list)
+        print("SERVER: sending movies list!")
+
+        self.outsocket.send_string(json_data)
+
+    def process_opinion(self, movie_id):
+        reviews = self.reviewer.get_reviews_from_id(movie_id)
+        random_review = self.reviewer.get_first_review(reviews)
 
         print("SERVER: sending a review!")
 
@@ -126,7 +125,11 @@ class ServerProcessor:
         while True:
             message_furat = self.insocket.recv_string()
             print("Furhat says: {}".format(message_furat))
-            self.behaviours[message_furat]()
+            parts = message_furat.split('|')
+            if len(parts) == 1:
+                self.behaviours[message_furat]()
+            else:
+                self.behaviours[parts[0]](parts[1])
 
     def get_audio(self):
         with sr.WavFile(urlopen(self.asocket)) as source:

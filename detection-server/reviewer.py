@@ -1,5 +1,4 @@
 from imdb import IMDb
-import random
 
 # create an instance of the IMDb class
 ia = IMDb()
@@ -28,8 +27,39 @@ class Reviwer:
 
     def get_all_movies_objs(self, movie_name):
         assert isinstance(movie_name, str)
-        movies_objs = self.ib.search_movie(movie_name.lower())
+        movies_objs = self.ib.search_movie_advanced(movie_name.lower(), results=50)
         return movies_objs
+
+    def get_movies_list(self, movie_name):
+        assert isinstance(movie_name, str)
+        movies_list = []
+
+        movies_objs = self.get_all_movies_objs(movie_name)
+        for movie in movies_objs:
+            # Only consider legit, released movies
+            if (movie.get('kind') == "movie") and (movie.get('state') is None) and (movie.get('rating') is not None) and (movie.get('gross') is not None):
+                movie_item = {
+                    'id':movie.getID(), 
+                    'name': movie.get('title'), 
+                    'year': movie.get('year'),
+                    'rating': movie.get('rating'),
+                    'directors':  [p['name'] for p in movie['directors']],
+                    'cast': [p['name'] for p in movie['cast']],
+                    'seen': True
+                }
+                movies_list.append(movie_item)
+        if len(movies_list) == 0:
+            movies_list.append({
+                    'id': "123", 
+                    'name': movie_name, 
+                    'year': "1900",
+                    'rating': "0.2",
+                    'directors':  ["What's his name"],
+                    'cast': ["that famous actor"],
+                    'seen': False
+                })
+        print(movies_list)
+        return sorted(movies_list, key = lambda i: int(i['year']))
 
     def get_first_id(self, movies_objs):
         return movies_objs[0].getID()
@@ -53,10 +83,10 @@ class Reviwer:
 
 if __name__ == "__main__":
     rev = Reviwer()
-    movies_objs = rev.get_all_movies_objs("Matrix")
+    movies_list = rev.get_movies_list("Harry Potter")
+    movies_objs = rev.get_all_movies_objs("Harry Potter")
     movie_id = rev.get_first_id(movies_objs)
     reviews = rev.get_reviews_from_id(movie_id)
     random_review = rev.get_first_review(reviews)
-
     random_movie = rev.pick_movie_with_taglines(3)
-    print(f"{random_movie.get('title')}, {random_movie.get('year')}:\n{random_movie.get('taglines')}")
+    print(f"{random_movie.get('title')}, {random_movie.get('year')}:\n{random_movie.get('taglines')}")    
