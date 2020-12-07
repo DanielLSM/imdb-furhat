@@ -45,11 +45,22 @@ class Reviwer:
                     'year': movie.get('year'),
                     'rating': movie.get('rating'),
                     'directors':  [p['name'] for p in movie['directors']],
-                    'cast': [p['name'] for p in movie['cast']]
+                    'cast': [p['name'] for p in movie['cast']],
+                    'seen': True
                 }
                 movies_list.append(movie_item)
+        if len(movies_list) == 0:
+            movies_list.append({
+                    'id': "123", 
+                    'name': movie_name, 
+                    'year': "1900",
+                    'rating': "0.2",
+                    'directors':  ["What's his name"],
+                    'cast': ["that famous actor"],
+                    'seen': False
+                })
         print(movies_list)
-        return movies_list
+        return sorted(movies_list, key = lambda i: int(i['year']))
 
     def get_first_id(self, movies_objs):
         return movies_objs[0].getID()
@@ -73,7 +84,7 @@ class Reviwer:
 
 if __name__ == "__main__":
     rev = Reviwer()
-    movies_list = rev.get_movies_list("Harry Potter")
+    movies_list = rev.get_movies_list("Matrix")
     movies_objs = rev.get_all_movies_objs("Harry Potter")
     movie_id = rev.get_first_id(movies_objs)
     reviews = rev.get_reviews_from_id(movie_id)
