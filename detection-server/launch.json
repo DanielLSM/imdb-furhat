@@ -1,8 +1,8 @@
 {
     "Furhat_IP": "127.0.0.1",
     "Dev_IP": "127.0.0.1",
-    "Audio_IP": "127.0.0.1",
-    "audio_port": "8787",
+    "Audio_IP": "130.229.177.70",
+    "audio_port": "8080",
     "furhat_port": "9999",
     "send_to_furhat_port": "9998"
 }

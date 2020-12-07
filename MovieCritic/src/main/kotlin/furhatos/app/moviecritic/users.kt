@@ -33,7 +33,7 @@ object gameState {
     }
 
     fun reset() {
-        rounds = 5
+        rounds = 3
         count = 0
         movies.shuffle()
         currentMovie = movies[0]
