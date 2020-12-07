@@ -131,13 +131,18 @@ class MovieOption : EnumEntity {
 }
 
 // Intent with examples fetched from an API. Note that the entity needs to be nullable
-//class ChoiceIntent(film: MovieChoice? = null) : Intent() {
-//    override fun getExamples(lang: Language): List<String> {
-//        return listOf("@film",
-//                "@film, please.",
-//                "I mean @film",
-//                "I meant @film",
-//                "I said @film")
-//    }
-//}
+class ChooseFirst() : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return listOf("The first one", "The first",
+                "Number one")
+    }
+}
+
+class ChooseLast() : Intent() {
+    override fun getExamples(lang: Language): List<String> {
+        return listOf("The last one",
+                "The last")
+    }
+}
+
 
