@@ -1,4 +1,4 @@
-name: furhat
+name: furhat1
 channels:
   - defaults
 dependencies:
@@ -132,5 +132,3 @@ dependencies:
       - wrapt==1.12.1
       - zipp==3.4.0
       - zmq==0.0.0
-# prefix: /home/daniel/anaconda3/envs/furhat
-
