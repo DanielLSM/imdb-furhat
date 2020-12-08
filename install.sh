@@ -1,3 +1,5 @@
+ cd ~
+
  # clone repo
  git clone https://github.com/DanielLSM/imdb-furhat
 
@@ -10,8 +12,12 @@ sudo ./gradlew shadowJar
 # move to python server
 cd ../detection-server
 
+wget -O weights.08.hdf5 https://kth.box.com/s/d75f62kllb35eixy1f15txo7aozkmglq
+
 # install conda environment
-conda env create -f furhat1.yml
+conda env create -f furhat.yml
+
+conda init bash
 
 conda activate furhat1
 
